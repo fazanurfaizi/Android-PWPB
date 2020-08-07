@@ -92,7 +92,7 @@
 
     <Button
         android:id="@+id/ok_btn"
-        android:layout_width="170dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/images"
         android:layout_marginRight="20dp"
@@ -102,7 +102,7 @@
 
     <Button
         android:id="@+id/cancel_btn"
-        android:layout_width="170dp"
+        android:layout_width="150dp"
         android:layout_marginLeft="20dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/images"
