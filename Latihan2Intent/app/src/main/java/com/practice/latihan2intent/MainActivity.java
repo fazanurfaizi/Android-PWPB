@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public Button btnmoveActivity;
+    public Button btnMoveActivity;
     public Button btnMoveWithDataActivity;
     public Button btnMoveWithObject;
     Button btnDialNumber;
@@ -25,8 +25,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.btnmoveActivity = (Button) findViewById(R.id.btn_move_activity);
-        this.btnmoveActivity.setOnClickListener(this);
+        this.btnMoveActivity = (Button) findViewById(R.id.btn_move_activity);
+        this.btnMoveActivity.setOnClickListener(this);
+
+        this.btnMoveWithDataActivity = (Button) findViewById((R.id.btn_move_with_data_activity));
+        this.btnMoveWithDataActivity.setOnClickListener(this);
 
         this.btnMoveWithObject = (Button) findViewById(R.id.btn_move_activity_object);
         this.btnMoveWithObject.setOnClickListener(this);
@@ -36,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         this.btnMoveResult = (Button) findViewById(R.id.btn_move_for_result);
         this.btnMoveResult.setOnClickListener(this);
+
+        this.tvResult = findViewById(R.id.tv_result);
     }
 
     @Override
