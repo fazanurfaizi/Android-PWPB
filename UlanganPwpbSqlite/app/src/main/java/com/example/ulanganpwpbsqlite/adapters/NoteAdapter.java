@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,7 +24,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
     private Context context;
     private onUserClickListener listener;
-    private List<Note> noteList = new ArrayList<>();
+    private List<Note> noteList;
 
     public NoteAdapter(Context context, List<Note> noteList, onUserClickListener listener) {
         this.context = context;
@@ -31,33 +32,25 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         this.noteList = noteList;
     }
 
-    public NoteAdapter(Context context, List<Note> noteList) {
-        this.context = context;
-        this.noteList = noteList;
-    }
-
     @NonNull
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.note_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item, parent, false);
         NoteViewHolder noteViewHolder = new NoteViewHolder(view);
+
         return noteViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
-        holder.title.setText(noteList.get(position).getTitle());
-        holder.body.setText(noteList.get(position).getBody());
-        holder.createdAt.setText(noteList.get(position).getCreatedAt());
-
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
+        final Note current = this.noteList.get(position);
+        holder.noteDate.setText(current.getCreatedAt());
+        holder.noteTitle.setText(current.getTitle());
+        holder.noteBody.setText(current.getBody());
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, AddNoteActivity.class);
-                intent.putExtra(AddNoteActivity.EXTRA_ID, noteList.get(position).getId());
-                intent.putExtra(AddNoteActivity.EXTRA_TITLE, noteList.get(position).getTitle());
-                intent.putExtra(AddNoteActivity.EXTRA_BODY, noteList.get(position).getBody());
-                context.startActivity(intent);
+                listener.onUserClick(current);
             }
         });
     }
@@ -68,21 +61,22 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     }
 
     public interface onUserClickListener {
-        void onUserClick(Note note, String action);
+        void onUserClick(Note note);
     }
 
     public class NoteViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title, body, createdAt;
-        ConstraintLayout constraintLayout;
+        LinearLayout linearLayout;
+        TextView noteDate;
+        TextView noteTitle;
+        TextView noteBody;
 
         public NoteViewHolder(@NonNull View view) {
             super(view);
-
-            title = view.findViewById(R.id.noteTitle);
-            body = view.findViewById(R.id.noteBody);
-            createdAt = view.findViewById(R.id.noteDate);
-            constraintLayout = view.findViewById(R.id.noteItem);
+            this.linearLayout = view.findViewById(R.id.noteItem);
+            this.noteDate = view.findViewById(R.id.noteDate);
+            this.noteTitle = view.findViewById(R.id.noteTitle);
+            this.noteBody = view.findViewById(R.id.noteBody);
         }
     }
 

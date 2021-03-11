@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,22 +18,18 @@ import com.example.ulanganpwpbsqlite.R;
 import com.example.ulanganpwpbsqlite.database.DatabaseHelper;
 import com.example.ulanganpwpbsqlite.models.Note;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class AddNoteActivity extends AppCompatActivity {
-
-    public static final String EXTRA_ID = "extra_id";
-    public static final String EXTRA_TITLE = "extra_title";
-    public static final String EXTRA_BODY = "extra_body";
-
-    public boolean edit = false;
-
-    private List<Note> noteList;
+public class AddNoteActivity extends AppCompatActivity
+        implements View.OnClickListener {
 
     private EditText editTextTitle;
     private EditText editTextBody;
+    private Button saveBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,31 +38,14 @@ public class AddNoteActivity extends AppCompatActivity {
         this.setTitle("Tambah Note");
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Button saveBtn = (Button) findViewById(R.id.btnSubmit);
         this.editTextTitle = (EditText) findViewById(R.id.titleTxt);
         this.editTextBody = (EditText) findViewById(R.id.bodyTxt);
-
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveNote();
-            }
-        });
-
-        if(getIntent().getStringExtra(EXTRA_TITLE) == null) {
-            this.edit = false;
-        } else {
-            this.edit = true;
-            this.editTextTitle.setText(getIntent().getStringExtra(EXTRA_TITLE));
-            this.editTextBody.setText(getIntent().getStringExtra(EXTRA_BODY));
-        }
+        this.saveBtn = (Button) findViewById(R.id.btnSubmit);
+        this.saveBtn.setOnClickListener(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(edit) {
-            getMenuInflater().inflate(R.menu.delete_menu, menu);
-        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -75,45 +55,38 @@ public class AddNoteActivity extends AppCompatActivity {
             case R.id.home:
                 finish();
                 return true;
-            case R.id.deleteBtn:
-                this.deleteNote();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveNote() {
+    private void saveNote(DatabaseHelper db) {
         String title = this.editTextTitle.getText().toString();
         String body = this.editTextBody.getText().toString();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        String createdAt = dateFormat.format(date);
 
-        if(title.equals("") || body.equals("")) {
-            Toast.makeText(this, "Isi semua field", Toast.LENGTH_SHORT);
-        } else {
-            DatabaseHelper db = new DatabaseHelper(this);
-            Note note = new Note();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-            Date date = new Date();
-            String formatCreatedAt = simpleDateFormat.format(date);
-            if(this.edit) {
-                note.setId(getIntent().getIntExtra(EXTRA_ID, 0));
-                note.setTitle(title);
-                note.setBody(body);
-                note.setCreatedAt(formatCreatedAt);
-                db.updateNote(note);
-            } else {
-                note.setTitle(title);
-                note.setBody(body);
-                note.setCreatedAt(formatCreatedAt);
-                db.insertNote(note);
-            }
+        Note note = new Note();
+        note.setTitle(title);
+        note.setBody(body);
+        note.setCreatedAt(createdAt);
 
-            db.close();
-        }
+        db.insertNote(note);
+
+        Toast.makeText(this, "Data berhasil ditambahkan", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(AddNoteActivity.this, HomeActivity.class);
+        startActivity(intent);
     }
 
-    private void deleteNote() {
-        DatabaseHelper db = new DatabaseHelper(AddNoteActivity.this);
-        db.deleteNote(getIntent().getIntExtra(EXTRA_ID, 0));
-        this.finish();
+    @Override
+    public void onClick(View v) {
+        DatabaseHelper db = new DatabaseHelper(this);
+        switch (v.getId()) {
+            case R.id.btnSubmit:
+                saveNote(db);
+                break;
+        }
     }
 }

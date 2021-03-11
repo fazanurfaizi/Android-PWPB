@@ -20,8 +20,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_TITLE = "title";
     private static final String KEY_BODY = "body";
     private static final String KEY_CREATED_AT = "createdAt";
-    private static final String KEY_UPDATED_AT = "updatedAt";
-
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -31,7 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String query="Create Table " + TABLE_NAME + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                KEY_TITLE + " TEXT, " + KEY_BODY + " TEXT," +
+                KEY_TITLE + " TEXT, " +
+                KEY_BODY + " TEXT, " +
                 KEY_CREATED_AT + " TEXT" +  ")";
         db.execSQL(query);
     }
@@ -80,6 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             note.setId(cursor.getInt(0));
             note.setTitle(cursor.getString(1));
             note.setBody(cursor.getString(2));
+            note.setCreatedAt(cursor.getString(3));
             noteArrayList.add(note);
         }
 
